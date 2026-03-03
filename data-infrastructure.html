@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Ready Data Infrastructure | ECCC AI Integration</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0d1b2a 0%, #1b3a4b 50%, #065a60 100%);
+            min-height: 100vh;
+            color: #e0e7ef;
+        }
+        .site-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(13, 27, 42, 0.95);
+            padding: 12px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 180, 150, 0.3);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        .site-header a { display: flex; align-items: center; text-decoration: none; }
+        .site-header img { height: 36px; }
+        .back-link { color: #00b496; text-decoration: none; font-size: 0.9rem; }
+        .content { padding: 100px 40px 60px; max-width: 1200px; margin: 0 auto; }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #00b496 0%, #00a8e8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle { color: #8fa8c0; font-size: 1.2rem; margin-bottom: 40px; }
+        .architecture {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .arch-title { font-size: 1.2rem; color: #00b496; margin-bottom: 24px; }
+        .arch-layers {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .arch-layer {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 180, 150, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .layer-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, rgba(0, 180, 150, 0.2), rgba(0, 119, 182, 0.2));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        .layer-content { flex: 1; }
+        .layer-content h4 { color: #e0e7ef; margin-bottom: 6px; }
+        .layer-content p { color: #8fa8c0; font-size: 0.9rem; }
+        .layer-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .layer-tag {
+            background: rgba(0, 180, 150, 0.15);
+            color: #00b496;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+        .data-catalog {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .catalog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .catalog-search {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 10px 16px;
+            color: #e0e7ef;
+            width: 300px;
+        }
+        .catalog-search::placeholder { color: #6a7f94; }
+        .datasets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        .dataset-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 18px;
+        }
+        .dataset-card h4 {
+            color: #e0e7ef;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+        .dataset-meta {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 10px;
+        }
+        .dataset-meta span {
+            color: #6a7f94;
+            font-size: 0.8rem;
+        }
+        .dataset-badges { display: flex; gap: 6px; }
+        .dataset-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+        .badge-fair { background: rgba(0, 180, 150, 0.2); color: #00b496; }
+        .badge-ready { background: rgba(0, 168, 232, 0.2); color: #00a8e8; }
+        .badge-cube { background: rgba(156, 39, 176, 0.2); color: #ce93d8; }
+        .quality-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .quality-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .quality-item {
+            text-align: center;
+            padding: 20px;
+        }
+        .quality-ring {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: conic-gradient(#00b496 0deg, #00b496 calc(var(--percent) * 3.6deg), rgba(255,255,255,0.1) calc(var(--percent) * 3.6deg));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+        }
+        .quality-ring-inner {
+            width: 75px;
+            height: 75px;
+            background: #1b3a4b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #00b496;
+        }
+        .quality-label { color: #8fa8c0; font-size: 0.85rem; }
+        .api-section { margin-top: 40px; }
+        .api-endpoint {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .api-method {
+            background: #00b496;
+            color: #0d1b2a;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            min-width: 50px;
+            text-align: center;
+        }
+        .api-path { color: #e0e7ef; font-family: monospace; font-size: 0.9rem; }
+        .api-desc { color: #6a7f94; font-size: 0.85rem; margin-left: auto; }
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #5a7489;
+            font-size: 0.85rem;
+        }
+        footer a { color: #00b496; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <a href="https://aldc.io" target="_blank">
+            <img src="https://www.aldc.io/_next/static/media/analytic-labs1.e195a58e.svg" alt="Analytic Labs">
+        </a>
+        <a href="index.html" class="back-link">&larr; Back to Overview</a>
+    </header>
+
+    <div class="content">
+        <h1>AI-Ready Data Infrastructure</h1>
+        <p class="subtitle">Transforming ECCC archives for machine learning with modern data architecture</p>
+
+        <div class="architecture">
+            <h3 class="arch-title">Data Lake Architecture</h3>
+            <div class="arch-layers">
+                <div class="arch-layer">
+                    <div class="layer-icon">&#128229;</div>
+                    <div class="layer-content">
+                        <h4>Ingestion Layer</h4>
+                        <p>Real-time and batch data ingestion from MSC GeoMet, GHGRP, and observation networks</p>
+                    </div>
+                    <div class="layer-tags">
+                        <span class="layer-tag">Kafka</span>
+                        <span class="layer-tag">Azure Data Factory</span>
+                        <span class="layer-tag">API Connectors</span>
+                    </div>
+                </div>
+                <div class="arch-layer">
+                    <div class="layer-icon">&#128451;</div>
+                    <div class="layer-content">
+                        <h4>Storage Layer</h4>
+                        <p>Scalable cloud-native storage with Delta Lake format for ACID transactions</p>
+                    </div>
+                    <div class="layer-tags">
+                        <span class="layer-tag">Azure Data Lake</span>
+                        <span class="layer-tag">Delta Lake</span>
+                        <span class="layer-tag">Parquet</span>
+                    </div>
+                </div>
+                <div class="arch-layer">
+                    <div class="layer-icon">&#9881;</div>
+                    <div class="layer-content">
+                        <h4>Processing Layer</h4>
+                        <p>Distributed processing for ETL, feature engineering, and DataCube generation</p>
+                    </div>
+                    <div class="layer-tags">
+                        <span class="layer-tag">Spark</span>
+                        <span class="layer-tag">Dask</span>
+                        <span class="layer-tag">xarray</span>
+                    </div>
+                </div>
+                <div class="arch-layer">
+                    <div class="layer-icon">&#128269;</div>
+                    <div class="layer-content">
+                        <h4>Catalog & Discovery</h4>
+                        <p>Searchable metadata catalog with lineage tracking and FAIR compliance</p>
+                    </div>
+                    <div class="layer-tags">
+                        <span class="layer-tag">Unity Catalog</span>
+                        <span class="layer-tag">Apache Atlas</span>
+                        <span class="layer-tag">OpenMetadata</span>
+                    </div>
+                </div>
+                <div class="arch-layer">
+                    <div class="layer-icon">&#128279;</div>
+                    <div class="layer-content">
+                        <h4>Access Layer</h4>
+                        <p>API-first access compatible with MSC GeoMet and OGC standards</p>
+                    </div>
+                    <div class="layer-tags">
+                        <span class="layer-tag">REST API</span>
+                        <span class="layer-tag">GraphQL</span>
+                        <span class="layer-tag">OGC WFS</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="data-catalog">
+            <div class="catalog-header">
+                <h3 class="arch-title">Data Catalog</h3>
+                <input type="text" class="catalog-search" placeholder="Search datasets...">
+            </div>
+            <div class="datasets-grid">
+                <div class="dataset-card">
+                    <h4>Historical Weather Observations</h4>
+                    <div class="dataset-meta">
+                        <span>1.2TB</span>
+                        <span>Updated hourly</span>
+                    </div>
+                    <div class="dataset-badges">
+                        <span class="dataset-badge badge-fair">FAIR</span>
+                        <span class="dataset-badge badge-ready">ML-Ready</span>
+                        <span class="dataset-badge badge-cube">DataCube</span>
+                    </div>
+                </div>
+                <div class="dataset-card">
+                    <h4>GHG Facility Emissions</h4>
+                    <div class="dataset-meta">
+                        <span>45GB</span>
+                        <span>Updated annually</span>
+                    </div>
+                    <div class="dataset-badges">
+                        <span class="dataset-badge badge-fair">FAIR</span>
+                        <span class="dataset-badge badge-ready">ML-Ready</span>
+                    </div>
+                </div>
+                <div class="dataset-card">
+                    <h4>Climate Projections (CMIP6)</h4>
+                    <div class="dataset-meta">
+                        <span>8.5TB</span>
+                        <span>Static</span>
+                    </div>
+                    <div class="dataset-badges">
+                        <span class="dataset-badge badge-fair">FAIR</span>
+                        <span class="dataset-badge badge-cube">DataCube</span>
+                    </div>
+                </div>
+                <div class="dataset-card">
+                    <h4>Radar Precipitation</h4>
+                    <div class="dataset-meta">
+                        <span>3.8TB</span>
+                        <span>Real-time</span>
+                    </div>
+                    <div class="dataset-badges">
+                        <span class="dataset-badge badge-ready">ML-Ready</span>
+                        <span class="dataset-badge badge-cube">DataCube</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quality-section">
+            <h3 class="arch-title">Data Quality Metrics</h3>
+            <div class="quality-grid">
+                <div class="quality-item">
+                    <div class="quality-ring" style="--percent: 98;">
+                        <div class="quality-ring-inner">98%</div>
+                    </div>
+                    <div class="quality-label">Completeness</div>
+                </div>
+                <div class="quality-item">
+                    <div class="quality-ring" style="--percent: 99;">
+                        <div class="quality-ring-inner">99%</div>
+                    </div>
+                    <div class="quality-label">Accuracy</div>
+                </div>
+                <div class="quality-item">
+                    <div class="quality-ring" style="--percent: 95;">
+                        <div class="quality-ring-inner">95%</div>
+                    </div>
+                    <div class="quality-label">Consistency</div>
+                </div>
+                <div class="quality-item">
+                    <div class="quality-ring" style="--percent: 100;">
+                        <div class="quality-ring-inner">100%</div>
+                    </div>
+                    <div class="quality-label">Timeliness</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="api-section">
+            <h3 class="arch-title">API Endpoints</h3>
+            <div class="api-endpoint">
+                <span class="api-method">GET</span>
+                <span class="api-path">/api/v1/datasets</span>
+                <span class="api-desc">List available datasets</span>
+            </div>
+            <div class="api-endpoint">
+                <span class="api-method">GET</span>
+                <span class="api-path">/api/v1/datasets/{id}/metadata</span>
+                <span class="api-desc">Dataset metadata & lineage</span>
+            </div>
+            <div class="api-endpoint">
+                <span class="api-method">GET</span>
+                <span class="api-path">/api/v1/datacube/{id}/slice</span>
+                <span class="api-desc">Extract DataCube slice</span>
+            </div>
+            <div class="api-endpoint">
+                <span class="api-method">POST</span>
+                <span class="api-path">/api/v1/features/generate</span>
+                <span class="api-desc">Generate ML features</span>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Powered by <a href="https://aldc.io">Analytic Labs</a> | Data Infrastructure Demo</p>
+    </footer>
+</body>
+</html>

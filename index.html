@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECCC AI Integration Platform | Analytic Labs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #0d1b2a 0%, #1b3a4b 50%, #065a60 100%);
+            min-height: 100vh;
+            color: #e0e7ef;
+        }
+        .site-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(13, 27, 42, 0.95);
+            padding: 12px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 180, 150, 0.3);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        .site-header a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+        .site-header img {
+            height: 36px;
+            transition: opacity 0.3s;
+        }
+        .header-badge {
+            background: linear-gradient(135deg, #00b496 0%, #0077b6 100%);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .hero {
+            padding: 140px 40px 80px;
+            text-align: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(0, 180, 150, 0.2);
+            border: 1px solid rgba(0, 180, 150, 0.4);
+            color: #00b496;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 24px;
+            letter-spacing: 0.5px;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #00b496 0%, #00a8e8 50%, #48cae4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+        .hero-subtitle {
+            color: #a0b4c8;
+            font-size: 1.3rem;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .value-props {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+        .value-prop {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #8fa8c0;
+            font-size: 0.95rem;
+        }
+        .value-prop .icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #00b496 0%, #0077b6 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        .demos-section {
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .section-title {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #00b496;
+            margin-bottom: 40px;
+            font-weight: 500;
+        }
+        .demos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+        .demo-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 28px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .demo-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #00b496, #0077b6);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .demo-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(0, 180, 150, 0.4);
+            transform: translateY(-4px);
+        }
+        .demo-card:hover::before {
+            opacity: 1;
+        }
+        .demo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, rgba(0, 180, 150, 0.2) 0%, rgba(0, 119, 182, 0.2) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            font-size: 24px;
+        }
+        .demo-card h3 {
+            color: #e0e7ef;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        .demo-card p {
+            color: #8fa8c0;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+        .demo-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .demo-tag {
+            background: rgba(0, 180, 150, 0.15);
+            color: #00b496;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .alignment-section {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 60px 40px;
+            margin-top: 40px;
+        }
+        .alignment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .alignment-item {
+            text-align: center;
+            padding: 20px;
+        }
+        .alignment-item h4 {
+            color: #00b496;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        .alignment-item p {
+            color: #8fa8c0;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #5a7489;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        footer a {
+            color: #00b496;
+            text-decoration: none;
+        }
+        .cta-section {
+            text-align: center;
+            padding: 60px 40px;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #00b496 0%, #0077b6 100%);
+            color: white;
+            padding: 16px 40px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(0, 180, 150, 0.3);
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(0, 180, 150, 0.4);
+        }
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .hero { padding: 120px 20px 60px; }
+            .value-props { flex-direction: column; gap: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <a href="https://aldc.io" target="_blank" rel="noopener noreferrer">
+            <img src="https://www.aldc.io/_next/static/media/analytic-labs1.e195a58e.svg" alt="Analytic Labs">
+        </a>
+        <span class="header-badge">ECCC AI Partnership</span>
+    </header>
+
+    <section class="hero">
+        <span class="hero-badge">Supporting Canada's AI Integration Roadmap</span>
+        <h1>AI-Powered Environmental Intelligence</h1>
+        <p class="hero-subtitle">
+            Accelerating ECCC's digital transformation with MLOps, data infrastructure,
+            and climate analytics solutions aligned with federal data strategy.
+        </p>
+        <div class="value-props">
+            <div class="value-prop">
+                <span class="icon">&#10003;</span>
+                <span>FAIR Data Compliant</span>
+            </div>
+            <div class="value-prop">
+                <span class="icon">&#10003;</span>
+                <span>OCAP/CARE Aligned</span>
+            </div>
+            <div class="value-prop">
+                <span class="icon">&#10003;</span>
+                <span>Azure Cloud Native</span>
+            </div>
+            <div class="value-prop">
+                <span class="icon">&#10003;</span>
+                <span>Protected B Ready</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="demos-section">
+        <h2 class="section-title">Capability Demonstrations</h2>
+        <div class="demos">
+            <a href="mlops-platform.html" class="demo-card">
+                <div class="demo-icon">&#9881;</div>
+                <h3>MLOps Platform</h3>
+                <p>End-to-end machine learning lifecycle management with containerized environments, model versioning, and automated retraining pipelines.</p>
+                <div class="demo-tags">
+                    <span class="demo-tag">Model Registry</span>
+                    <span class="demo-tag">CI/CD</span>
+                    <span class="demo-tag">Monitoring</span>
+                </div>
+            </a>
+
+            <a href="data-infrastructure.html" class="demo-card">
+                <div class="demo-icon">&#128202;</div>
+                <h3>AI-Ready Data Infrastructure</h3>
+                <p>Transform archive systems for AI training with DataCubes, automated quality pipelines, and API-first data access.</p>
+                <div class="demo-tags">
+                    <span class="demo-tag">Data Lake</span>
+                    <span class="demo-tag">ETL/ELT</span>
+                    <span class="demo-tag">Catalog</span>
+                </div>
+            </a>
+
+            <a href="climate-analytics.html" class="demo-card">
+                <div class="demo-icon">&#127777;</div>
+                <h3>Climate Analytics</h3>
+                <p>Advanced climate data visualization, trend analysis, and predictive modeling for environmental decision support.</p>
+                <div class="demo-tags">
+                    <span class="demo-tag">Forecasting</span>
+                    <span class="demo-tag">Visualization</span>
+                    <span class="demo-tag">APIs</span>
+                </div>
+            </a>
+
+            <a href="ghg-analytics.html" class="demo-card">
+                <div class="demo-icon">&#127811;</div>
+                <h3>GHG Emissions Analytics</h3>
+                <p>Enhanced greenhouse gas reporting with anomaly detection, predictive modeling, and GHGRP integration.</p>
+                <div class="demo-tags">
+                    <span class="demo-tag">MRV</span>
+                    <span class="demo-tag">Reporting</span>
+                    <span class="demo-tag">Compliance</span>
+                </div>
+            </a>
+
+            <a href="indigenous-data.html" class="demo-card">
+                <div class="demo-icon">&#127796;</div>
+                <h3>Indigenous Data Governance</h3>
+                <p>OCAP and CARE-compliant data governance frameworks with consent management and sovereignty controls.</p>
+                <div class="demo-tags">
+                    <span class="demo-tag">OCAP</span>
+                    <span class="demo-tag">CARE</span>
+                    <span class="demo-tag">Governance</span>
+                </div>
+            </a>
+
+            <a href="weather-ai.html" class="demo-card">
+                <div class="demo-icon">&#9729;</div>
+                <h3>Weather Prediction AI</h3>
+                <p>Hybrid physics-ML approaches for nowcasting, downscaling, and high-impact weather diagnostics.</p>
+                <div class="demo-tags">
+                    <span class="demo-tag">Nowcasting</span>
+                    <span class="demo-tag">Downscaling</span>
+                    <span class="demo-tag">Hybrid ML</span>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <section class="alignment-section">
+        <h2 class="section-title">Federal Strategy Alignment</h2>
+        <div class="alignment-grid">
+            <div class="alignment-item">
+                <h4>2023-2026 Data Strategy</h4>
+                <p>Enabling data-driven decision making across the federal public service</p>
+            </div>
+            <div class="alignment-item">
+                <h4>AI Integration Roadmap</h4>
+                <p>Supporting ECCC's 2024-2030 vision for weather and environmental predictions</p>
+            </div>
+            <div class="alignment-item">
+                <h4>Open Science Action Plan</h4>
+                <p>FAIR data principles with interoperability across MSC GeoMet and ClimateData.ca</p>
+            </div>
+            <div class="alignment-item">
+                <h4>Indigenous Partnership</h4>
+                <p>Meaningful recognition of First Nations, Inuit, and Metis governance and rights</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <a href="mailto:contact@aldc.io?subject=ECCC%20AI%20Partnership%20Inquiry" class="cta-button">
+            Start the Conversation
+        </a>
+    </section>
+
+    <footer>
+        <p>Powered by <a href="https://aldc.io">Analytic Labs</a> | Supporting Canada's Environmental Intelligence</p>
+        <p style="margin-top: 10px; font-size: 0.8rem;">This is a prototype demonstration. All capabilities shown are representative of ALDC's production-ready solutions.</p>
+    </footer>
+</body>
+</html>

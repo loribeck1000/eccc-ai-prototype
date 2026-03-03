@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indigenous Data Governance | ECCC AI Integration</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0d1b2a 0%, #1b3a4b 50%, #065a60 100%);
+            min-height: 100vh;
+            color: #e0e7ef;
+        }
+        .site-header {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: rgba(13, 27, 42, 0.95);
+            padding: 12px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(0, 180, 150, 0.3);
+            z-index: 1000; backdrop-filter: blur(10px);
+        }
+        .site-header a { display: flex; align-items: center; text-decoration: none; }
+        .site-header img { height: 36px; }
+        .back-link { color: #00b496; text-decoration: none; font-size: 0.9rem; }
+        .content { padding: 100px 40px 60px; max-width: 1100px; margin: 0 auto; }
+        h1 {
+            font-size: 2.5rem; margin-bottom: 16px;
+            background: linear-gradient(135deg, #00b496 0%, #00a8e8 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { color: #8fa8c0; font-size: 1.2rem; margin-bottom: 40px; }
+        .principles-section { margin-bottom: 50px; }
+        .principles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+        }
+        .principle-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 28px;
+            text-align: center;
+        }
+        .principle-icon {
+            width: 60px; height: 60px;
+            background: linear-gradient(135deg, rgba(0, 180, 150, 0.2), rgba(0, 119, 182, 0.2));
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 28px;
+        }
+        .principle-card h3 { color: #00b496; margin-bottom: 12px; font-size: 1.1rem; }
+        .principle-card p { color: #8fa8c0; font-size: 0.9rem; line-height: 1.6; }
+        .section-title {
+            font-size: 1.3rem; color: #00b496; margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(0, 180, 150, 0.2);
+        }
+        .framework-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .framework-item {
+            display: flex; gap: 20px; align-items: flex-start;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .framework-item:last-child { border-bottom: none; }
+        .framework-number {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, #00b496, #0077b6);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.9rem; flex-shrink: 0;
+        }
+        .framework-content h4 { color: #e0e7ef; margin-bottom: 8px; }
+        .framework-content p { color: #8fa8c0; font-size: 0.9rem; line-height: 1.6; }
+        .consent-demo {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 30px;
+        }
+        .consent-demo h4 { color: #e0e7ef; margin-bottom: 16px; }
+        .consent-form {
+            display: grid; gap: 16px;
+        }
+        .consent-field {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+        .consent-field label { color: #a0b4c8; font-size: 0.9rem; }
+        .toggle {
+            width: 50px; height: 26px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 13px;
+            position: relative;
+            cursor: pointer;
+        }
+        .toggle.active { background: #00b496; }
+        .toggle::after {
+            content: '';
+            position: absolute;
+            width: 22px; height: 22px;
+            background: white;
+            border-radius: 50%;
+            top: 2px; left: 2px;
+            transition: transform 0.2s;
+        }
+        .toggle.active::after { transform: translateX(24px); }
+        .compliance-badges {
+            display: flex; gap: 16px; flex-wrap: wrap; margin-top: 30px;
+        }
+        .compliance-badge {
+            background: rgba(0, 180, 150, 0.15);
+            border: 1px solid rgba(0, 180, 150, 0.3);
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .compliance-badge span { color: #00b496; font-size: 0.9rem; font-weight: 500; }
+        footer {
+            text-align: center; padding: 40px;
+            color: #5a7489; font-size: 0.85rem;
+        }
+        footer a { color: #00b496; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <a href="https://aldc.io" target="_blank">
+            <img src="https://www.aldc.io/_next/static/media/analytic-labs1.e195a58e.svg" alt="Analytic Labs">
+        </a>
+        <a href="index.html" class="back-link">&larr; Back to Overview</a>
+    </header>
+
+    <div class="content">
+        <h1>Indigenous Data Governance</h1>
+        <p class="subtitle">OCAP and CARE-compliant data governance frameworks</p>
+
+        <div class="principles-section">
+            <h2 class="section-title">OCAP Principles</h2>
+            <div class="principles-grid">
+                <div class="principle-card">
+                    <div class="principle-icon">&#127796;</div>
+                    <h3>Ownership</h3>
+                    <p>First Nations communities own their cultural knowledge, data, and information collectively.</p>
+                </div>
+                <div class="principle-card">
+                    <div class="principle-icon">&#128274;</div>
+                    <h3>Control</h3>
+                    <p>Communities control all aspects of data management including collection, use, and disclosure.</p>
+                </div>
+                <div class="principle-card">
+                    <div class="principle-icon">&#128273;</div>
+                    <h3>Access</h3>
+                    <p>Communities have the right to access their own data and manage access by others.</p>
+                </div>
+                <div class="principle-card">
+                    <div class="principle-icon">&#127968;</div>
+                    <h3>Possession</h3>
+                    <p>Physical control of data through community-managed systems and infrastructure.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="principles-section">
+            <h2 class="section-title">CARE Principles</h2>
+            <div class="principles-grid">
+                <div class="principle-card">
+                    <div class="principle-icon">&#129309;</div>
+                    <h3>Collective Benefit</h3>
+                    <p>Data ecosystems designed for Indigenous innovation and self-determination.</p>
+                </div>
+                <div class="principle-card">
+                    <div class="principle-icon">&#9878;</div>
+                    <h3>Authority to Control</h3>
+                    <p>Indigenous peoples' rights to govern data creation, collection, and use.</p>
+                </div>
+                <div class="principle-card">
+                    <div class="principle-icon">&#128220;</div>
+                    <h3>Responsibility</h3>
+                    <p>Accountability for nurturing respectful relationships with Indigenous data.</p>
+                </div>
+                <div class="principle-card">
+                    <div class="principle-icon">&#9829;</div>
+                    <h3>Ethics</h3>
+                    <p>Minimizing harm and maximizing benefit aligned with Indigenous values.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="framework-section">
+            <h2 class="section-title">Governance Framework Implementation</h2>
+            <div class="framework-item">
+                <div class="framework-number">1</div>
+                <div class="framework-content">
+                    <h4>Data Classification</h4>
+                    <p>Automated classification of environmental data based on Indigenous knowledge content, territorial boundaries, and community significance.</p>
+                </div>
+            </div>
+            <div class="framework-item">
+                <div class="framework-number">2</div>
+                <div class="framework-content">
+                    <h4>Consent Management</h4>
+                    <p>Granular consent workflows enabling communities to specify exactly how their data can be used, by whom, and for what purposes.</p>
+                </div>
+            </div>
+            <div class="framework-item">
+                <div class="framework-number">3</div>
+                <div class="framework-content">
+                    <h4>Access Control</h4>
+                    <p>Role-based and community-based access controls with full audit logging and sovereignty-preserving encryption.</p>
+                </div>
+            </div>
+            <div class="framework-item">
+                <div class="framework-number">4</div>
+                <div class="framework-content">
+                    <h4>Data Stewardship</h4>
+                    <p>Community-designated data stewards with authority to manage, modify, or revoke data access at any time.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="consent-demo">
+            <h4>Data Sharing Consent Configuration</h4>
+            <div class="consent-form">
+                <div class="consent-field">
+                    <label>Share aggregate climate data with federal agencies</label>
+                    <div class="toggle active"></div>
+                </div>
+                <div class="consent-field">
+                    <label>Allow use in public climate reports</label>
+                    <div class="toggle active"></div>
+                </div>
+                <div class="consent-field">
+                    <label>Share location-specific data with researchers</label>
+                    <div class="toggle"></div>
+                </div>
+                <div class="consent-field">
+                    <label>Include in machine learning training datasets</label>
+                    <div class="toggle"></div>
+                </div>
+                <div class="consent-field">
+                    <label>Export to third-party platforms</label>
+                    <div class="toggle"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="compliance-badges">
+            <div class="compliance-badge">
+                <span>&#10003;</span>
+                <span>OCAP Certified</span>
+            </div>
+            <div class="compliance-badge">
+                <span>&#10003;</span>
+                <span>CARE Aligned</span>
+            </div>
+            <div class="compliance-badge">
+                <span>&#10003;</span>
+                <span>UNDRIP Compliant</span>
+            </div>
+            <div class="compliance-badge">
+                <span>&#10003;</span>
+                <span>Protected B Ready</span>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Powered by <a href="https://aldc.io">Analytic Labs</a> | Indigenous Data Governance Demo</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,31 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/mlops", "destination": "/mlops-platform.html" },
+    { "source": "/data", "destination": "/data-infrastructure.html" },
+    { "source": "/climate", "destination": "/climate-analytics.html" },
+    { "source": "/ghg", "destination": "/ghg-analytics.html" },
+    { "source": "/indigenous", "destination": "/indigenous-data.html" },
+    { "source": "/weather", "destination": "/weather-ai.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, must-revalidate"
+        }
+      ]
+    }
+  ]
+}

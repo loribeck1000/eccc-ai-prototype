@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Climate Analytics | ECCC AI Integration</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0d1b2a 0%, #1b3a4b 50%, #065a60 100%);
+            min-height: 100vh;
+            color: #e0e7ef;
+        }
+        .site-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(13, 27, 42, 0.95);
+            padding: 12px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 180, 150, 0.3);
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        .site-header a { display: flex; align-items: center; text-decoration: none; }
+        .site-header img { height: 36px; }
+        .back-link { color: #00b496; text-decoration: none; font-size: 0.9rem; }
+        .content { padding: 100px 40px 60px; max-width: 1400px; margin: 0 auto; }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #00b496 0%, #00a8e8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle { color: #8fa8c0; font-size: 1.2rem; margin-bottom: 40px; }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+        @media (max-width: 1000px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+        .panel {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .panel-title {
+            font-size: 1rem;
+            color: #00b496;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .chart-container {
+            height: 300px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-end;
+            padding: 20px;
+            gap: 8px;
+        }
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(180deg, #00b496 0%, #0077b6 100%);
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: all 0.3s;
+            min-height: 20px;
+        }
+        .chart-bar:hover {
+            background: linear-gradient(180deg, #00d4aa 0%, #00a8e8 100%);
+        }
+        .chart-bar::after {
+            content: attr(data-label);
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: #6a7f94;
+            white-space: nowrap;
+        }
+        .trend-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            margin-top: 16px;
+        }
+        .trend-up { color: #ff6b6b; }
+        .trend-down { color: #00b496; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #00b496;
+        }
+        .stat-label { color: #8fa8c0; font-size: 0.8rem; margin-top: 4px; }
+        .stat-change {
+            font-size: 0.75rem;
+            margin-top: 6px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        .stat-change.up { background: rgba(255, 107, 107, 0.2); color: #ff6b6b; }
+        .stat-change.down { background: rgba(0, 180, 150, 0.2); color: #00b496; }
+        .map-container {
+            height: 350px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        .map-placeholder {
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400"><rect fill="%230d1b2a"/><path d="M0,300 Q200,250 400,280 T800,260 V400 H0 Z" fill="%23065a60" opacity="0.3"/><path d="M0,320 Q200,290 400,310 T800,300 V400 H0 Z" fill="%2300b496" opacity="0.2"/><circle cx="200" cy="180" r="8" fill="%2300b496"/><circle cx="350" cy="150" r="10" fill="%23ff6b6b"/><circle cx="500" cy="200" r="6" fill="%2300b496"/><circle cx="600" cy="160" r="12" fill="%23ffc107"/><circle cx="450" cy="220" r="7" fill="%2300b496"/></svg>') center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .map-overlay {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+        .map-legend {
+            display: flex;
+            gap: 16px;
+            margin-top: 8px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            color: #8fa8c0;
+        }
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .predictions-section {
+            margin-top: 30px;
+        }
+        .predictions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .prediction-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .prediction-icon { font-size: 2rem; margin-bottom: 12px; }
+        .prediction-title { color: #e0e7ef; font-size: 0.95rem; margin-bottom: 8px; }
+        .prediction-value { color: #00b496; font-size: 1.5rem; font-weight: 700; }
+        .prediction-range { color: #6a7f94; font-size: 0.8rem; margin-top: 4px; }
+        .confidence-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00b496, #00a8e8);
+            border-radius: 2px;
+        }
+        .confidence-label {
+            font-size: 0.7rem;
+            color: #6a7f94;
+            margin-top: 4px;
+        }
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #5a7489;
+            font-size: 0.85rem;
+        }
+        footer a { color: #00b496; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <a href="https://aldc.io" target="_blank">
+            <img src="https://www.aldc.io/_next/static/media/analytic-labs1.e195a58e.svg" alt="Analytic Labs">
+        </a>
+        <a href="index.html" class="back-link">&larr; Back to Overview</a>
+    </header>
+
+    <div class="content">
+        <h1>Climate Analytics Dashboard</h1>
+        <p class="subtitle">Advanced climate data visualization and predictive modeling</p>
+
+        <div class="dashboard-grid">
+            <div class="panel">
+                <h3 class="panel-title">&#127777; Annual Temperature Anomaly (Canada)</h3>
+                <div class="chart-container">
+                    <div class="chart-bar" style="height: 40%;" data-label="2020"></div>
+                    <div class="chart-bar" style="height: 55%;" data-label="2021"></div>
+                    <div class="chart-bar" style="height: 48%;" data-label="2022"></div>
+                    <div class="chart-bar" style="height: 65%;" data-label="2023"></div>
+                    <div class="chart-bar" style="height: 72%;" data-label="2024"></div>
+                    <div class="chart-bar" style="height: 78%;" data-label="2025"></div>
+                    <div class="chart-bar" style="height: 85%; background: linear-gradient(180deg, #ff6b6b 0%, #c0392b 100%);" data-label="2026*"></div>
+                </div>
+                <div class="trend-indicator trend-up">
+                    &#9650; +1.8C above 1961-1990 baseline (YTD 2026)
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3 class="panel-title">&#128200; Key Indicators</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">+2.3C</div>
+                        <div class="stat-label">Arctic Warming</div>
+                        <span class="stat-change up">+0.4 vs 2025</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">412</div>
+                        <div class="stat-label">CO2 (ppm)</div>
+                        <span class="stat-change up">+2.1 YoY</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">-12%</div>
+                        <div class="stat-label">Sea Ice Extent</div>
+                        <span class="stat-change up">vs 1981-2010</span>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">847</div>
+                        <div class="stat-label">Extreme Events</div>
+                        <span class="stat-change up">+15% YoY</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3 class="panel-title">&#127758; Climate Risk Map - Canada</h3>
+            <div class="map-container">
+                <div class="map-placeholder"></div>
+                <div class="map-overlay">
+                    <strong>Active Monitoring Stations: 1,247</strong>
+                    <div class="map-legend">
+                        <div class="legend-item">
+                            <div class="legend-dot" style="background: #00b496;"></div>
+                            Normal
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot" style="background: #ffc107;"></div>
+                            Elevated
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot" style="background: #ff6b6b;"></div>
+                            High Risk
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="predictions-section">
+            <div class="panel">
+                <h3 class="panel-title">&#129302; AI-Powered Predictions (Next 30 Days)</h3>
+                <div class="predictions-grid">
+                    <div class="prediction-card">
+                        <div class="prediction-icon">&#127777;</div>
+                        <div class="prediction-title">Temperature Anomaly</div>
+                        <div class="prediction-value">+1.2C</div>
+                        <div class="prediction-range">Range: +0.8C to +1.6C</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: 87%;"></div>
+                        </div>
+                        <div class="confidence-label">87% confidence</div>
+                    </div>
+                    <div class="prediction-card">
+                        <div class="prediction-icon">&#127783;</div>
+                        <div class="prediction-title">Precipitation</div>
+                        <div class="prediction-value">+15%</div>
+                        <div class="prediction-range">Above seasonal norm</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: 72%;"></div>
+                        </div>
+                        <div class="confidence-label">72% confidence</div>
+                    </div>
+                    <div class="prediction-card">
+                        <div class="prediction-icon">&#127788;</div>
+                        <div class="prediction-title">Extreme Heat Days</div>
+                        <div class="prediction-value">4-6</div>
+                        <div class="prediction-range">Days above 30C</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: 65%;"></div>
+                        </div>
+                        <div class="confidence-label">65% confidence</div>
+                    </div>
+                    <div class="prediction-card">
+                        <div class="prediction-icon">&#128293;</div>
+                        <div class="prediction-title">Wildfire Risk Index</div>
+                        <div class="prediction-value">Moderate</div>
+                        <div class="prediction-range">Western regions elevated</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: 78%;"></div>
+                        </div>
+                        <div class="confidence-label">78% confidence</div>
+                    </div>
+                    <div class="prediction-card">
+                        <div class="prediction-icon">&#128167;</div>
+                        <div class="prediction-title">Flood Risk</div>
+                        <div class="prediction-value">Low</div>
+                        <div class="prediction-range">Most regions normal</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: 82%;"></div>
+                        </div>
+                        <div class="confidence-label">82% confidence</div>
+                    </div>
+                    <div class="prediction-card">
+                        <div class="prediction-icon">&#127786;</div>
+                        <div class="prediction-title">Air Quality</div>
+                        <div class="prediction-value">Good</div>
+                        <div class="prediction-range">AQI 25-45 expected</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: 91%;"></div>
+                        </div>
+                        <div class="confidence-label">91% confidence</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Powered by <a href="https://aldc.io">Analytic Labs</a> | Climate Analytics Demo</p>
+        <p style="margin-top: 8px; font-size: 0.75rem; color: #4a5a6a;">* Simulated data for demonstration purposes</p>
+    </footer>
+</body>
+</html>
